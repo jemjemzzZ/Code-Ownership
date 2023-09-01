@@ -33,7 +33,10 @@ class Component:
         self.licenseInfo = None
         self.licenseType = None
         # "classical" process metric
-    
+        self.total_added = 0
+        self.total_deleted = 0
+        self.filesize = 0
+        
     # add contributor info
     def addContribute(self, contributor, contribution):
         self.contribute[contributor] = self.contribute.get(contributor, 0) + contribution 
@@ -79,11 +82,10 @@ class Component:
         self.licenseInfo = licenseInfo
         self.licenseType = licenseType
     
-    # add defective contributor info
-    def isDefective(self, defective, contributor):
-        if defective:
-            self.isDefective = True
-            self.defectiveContributors.append(contributor)
+    def setClassic(self, total_added, total_deleted, filesize):
+        self.total_added = total_added
+        self.total_deleted = total_deleted
+        self.filesize = filesize
 
 
 def inComponents(components, name):

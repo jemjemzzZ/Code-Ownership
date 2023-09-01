@@ -22,7 +22,7 @@ def git_close_repo(repo, repo_dir):
     repo.close()
     time.sleep(2)
     # subprocess.run(['taskkill', '/F', '/IM', 'git.exe'], shell=True)
-    git.rmtree(f"{repo_dir}/.git/")
+    git.rmtree(f"repos/{repo_dir}/.git/")
     git.rmtree(repo_dir) # remove local repo
     return
 
@@ -112,7 +112,7 @@ def calculate_repo_release(repo_release):
 
 def git_get_file_history(repo, filename, iso_date):
     git_date_format = iso_date.replace('T', '').replace('Z', '')
-    file_history = repo.git.log('--follow', "--numstat", 
+    file_history = repo.git.log('--follow', "--stat", 
                             "--pretty=format:'commit %h%nAuthor: %aN <%aE>%nDate: %ad%n'", 
                             "--date=iso", '-p', '--', filename, before=git_date_format)
     # print(file_history)
@@ -131,6 +131,8 @@ def create_component(repo_user, repo_name, filename, iso_date):
     repo_release_info = calculate_repo_release(repo_release)
     
     file_history = git_get_file_history(repo, filename, iso_date)
+    
+    # code ownership
     blocks = re.split(r'commit [0-9a-f]+\n', file_history)[1:]
     for block in blocks:
         # extract author and date
@@ -144,6 +146,7 @@ def create_component(repo_user, repo_name, filename, iso_date):
         # print(f"Date: {date}")
         component.addContribute(author, 1)
     
+    # time/release/license
     timeType, ossStage = calculateTime(repo_day_difference, repo_release_info, repo_time, repo_release)
     licenseType = checkLicenseType(repo_license_info)
     component.setTime(repo_day_difference, repo_release_info, timeType, ossStage)
@@ -153,11 +156,59 @@ def create_component(repo_user, repo_name, filename, iso_date):
     # print(f"Release: {repo_release_info}")
     # print(f"Stage: {timeType}, {ossStage}")
     # print(f"License: {repo_license_info}, {licenseType}")
+    
+    # classic
+    total_added, total_deleted = calculate_churn(filename, file_history)
+    file_size = get_filesize(repo, filename, file_history)
+    component.setClassic(total_added, total_deleted, file_size)
+    # print(f'Filename: {filename}')
+    # print(f'Total_added: {total_added}, Total_deleted: {total_deleted}')
+    # print(f'File Size: {file_size}')
     return component
 
 
-# repo_user = "tensorflow"
-# repo_name = "tensorflow"
-# filename = "tensorflow/core/kernels/sparse_tensors_map_ops.cc"
-# iso_date = "2021-12-09T22:32:48Z"
-# create_component(repo_user, repo_name, filename, iso_date)
+def calculate_churn(filename, file_history):
+    total_added = 0
+    total_deleted = 0
+
+    try:
+        blocks = re.split(r'commit [0-9a-f]+\n', file_history)[1:]
+        for block in blocks:
+            insertion_pattern = r'(\d+) insertion'
+            deletion_pattern = r'(\d+) deletion'
+            
+            insertion_match = re.search(insertion_pattern, block)
+            deletion_match = re.search(deletion_pattern, block)
+
+            insertions = int(insertion_match.group(1)) if insertion_match else 0
+            deletions = int(deletion_match.group(1)) if deletion_match else 0
+
+            total_added += insertions
+            total_deleted += deletions
+    except Exception as e:
+        total_added = 0
+        total_deleted = 0
+        print(e)
+    
+    return total_added, total_deleted
+
+
+def get_filesize(repo, filename, file_history):
+    try:
+        lines = file_history.split("\n")
+        # print(lines)
+        commit_hashes = [line.split()[1] for line in lines if line.startswith("'commit")]
+        latest_commit_hash = commit_hashes[0]
+        file_content = repo.git.show(f"{latest_commit_hash}:{filename}")
+        return len(file_content.split('\n'))
+    except Exception as e:
+        print(filename)
+        print(e)
+        print("")
+
+
+repo_user = "tensorflow"
+repo_name = "tensorflow"
+filename = "tensorflow/core/kernels/sparse_tensors_map_ops.cc"
+iso_date = "2021-12-09T22:32:48Z"
+create_component(repo_user, repo_name, filename, iso_date)
