@@ -149,7 +149,8 @@ def create_component(repo_user, repo_name, filename, iso_date):
     # time/release/license
     timeType, ossStage = calculateTime(repo_day_difference, repo_release_info, repo_time, repo_release)
     licenseType = checkLicenseType(repo_license_info)
-    component.setTime(repo_day_difference, repo_release_info, timeType, ossStage)
+    age = calculate_age(file_history)
+    component.setTime(repo_day_difference, repo_release_info, timeType, ossStage, age)
     component.setLicense(repo_license_info, licenseType)
     component.calculateOwnership()
     # print(f"Days: {repo_day_difference}")
@@ -201,6 +202,42 @@ def get_filesize(repo, filename, file_history):
         latest_commit_hash = commit_hashes[0]
         file_content = repo.git.show(f"{latest_commit_hash}:{filename}")
         return len(file_content.split('\n'))
+    except Exception as e:
+        print(filename)
+        print(e)
+        print("")
+
+
+def calculate_age(file_history):
+    age = 0
+    
+    blocks = re.split(r'commit [0-9a-f]+\n', file_history)[1:]
+    date1_match = re.search(r'Date:\s+(.*)', blocks[0])
+    date2_match = re.search(r'Date:\s+(.*)', blocks[-1])
+    
+    if date1_match and date2_match:
+        date1 = date1_match.group(1) # latest date
+        date2 = date2_match.group(1) # start date
+        
+        datetime_obj1 = datetime.strptime(date1.split()[0] + ' ' + date1.split()[1], "%Y-%m-%d %H:%M:%S")
+        datetime_obj2 = datetime.strptime(date2.split()[0] + ' ' + date2.split()[1], "%Y-%m-%d %H:%M:%S")
+        
+        # Calculate the time difference
+        time_difference = datetime_obj1 - datetime_obj2
+        age = time_difference.days
+    return age
+
+
+def calculate_sloc_cyclomatic_complexity(repo, filename, file_history):
+    try:
+        lines = file_history.split("\n")
+        # print(lines)
+        commit_hashes = [line.split()[1] for line in lines if line.startswith("'commit")]
+        latest_commit_hash = commit_hashes[0]
+        file_content = repo.git.show(f"{latest_commit_hash}:{filename}")
+        
+        
+        
     except Exception as e:
         print(filename)
         print(e)

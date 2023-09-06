@@ -29,6 +29,7 @@ class Component:
         self.release = None # release statistic at collection (major, minor, pre_release, patch, alpha_beta)
         self.timeType = None # Five stages of the time
         self.ossStage = None # Six stages of the OSS project
+        self.age = None
         # license
         self.licenseInfo = None
         self.licenseType = None
@@ -72,11 +73,12 @@ class Component:
             minorContriAvg /= minorNum
         return minorNum, minorPer, minorContriAvg
     
-    def setTime(self, time_info, release_info, timeType, ossStage):
+    def setTime(self, time_info, release_info, timeType, ossStage, age):
         self.time = time_info
         self.release = release_info
         self.timeType = timeType
         self.ossStage = ossStage
+        self.age = age
     
     def setLicense(self, licenseInfo, licenseType):
         self.licenseInfo = licenseInfo
