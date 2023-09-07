@@ -55,6 +55,7 @@ def process_vulnerability_to_dataset(input_file, dataset, row_start_number):
             patch_urls = row['Patch URLs']
             cve_id = None if pd.isna(row['CVE ID']) else row['CVE ID']
             
+            # for only with cve id
             if pd.isna(patch_urls) or pd.isna(row['CVE ID']):
                 row_number += 1
                 continue

@@ -15,7 +15,7 @@ def get_severity(cve_id):
     response = requests.get(url, headers=HEADERS)
     
     if response.status_code != 200:
-        time.sleep(40)
+        time.sleep(60)
         response = requests.get(url, headers=HEADERS)
     
     data = response.json()

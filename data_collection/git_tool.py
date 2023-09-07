@@ -84,6 +84,20 @@ def git_get_repo_release(repo, iso_date):
     return repo_release
 
 
+def git_get_repo_release_within_age(repo, iso_date, age):
+    repo_git = git.Git(repo.working_tree_dir)
+    date_limit_obj = datetime.strptime(iso_date, "%Y-%m-%dT%H:%M:%SZ")
+    repo_release_flags = ["-l", "v*"]
+    tags = repo_git.tag(*repo_release_flags).splitlines()
+    repo_release_age = {}
+    for tag in tags:
+        tag_date = repo_git.show("-s", "--format=%ci", tag)
+        tag_date_obj = datetime.strptime(tag_date.split()[0] + " " + tag_date.split()[1], "%Y-%m-%d %H:%M:%S")
+        if (date_limit_obj - tag_date_obj).days <= age and tag_date_obj <= date_limit_obj:
+            repo_release_age[tag] = tag_date
+    return repo_release_age
+
+
 def calculate_repo_release(repo_release):
     major = 0 # major release
     minor = 0 # minor release
@@ -150,13 +164,21 @@ def create_component(repo_user, repo_name, filename, iso_date):
     timeType, ossStage = calculateTime(repo_day_difference, repo_release_info, repo_time, repo_release)
     licenseType = checkLicenseType(repo_license_info)
     age = calculate_age(file_history)
-    component.setTime(repo_day_difference, repo_release_info, timeType, ossStage, age)
+    component.setTime(repo_day_difference, repo_release_info, timeType, ossStage)
     component.setLicense(repo_license_info, licenseType)
     component.calculateOwnership()
     # print(f"Days: {repo_day_difference}")
     # print(f"Release: {repo_release_info}")
     # print(f"Stage: {timeType}, {ossStage}")
     # print(f"License: {repo_license_info}, {licenseType}")
+    
+    repo_release_age = git_get_repo_release_within_age(repo, iso_date, age)
+    repo_release_info_age = calculate_repo_release(repo_release_age)
+    timeTypeAge, ossStageAge = calculateTime(age, repo_release_info_age, repo_time, repo_release_age)
+    component.setTimeAge(age, repo_release_info_age, timeTypeAge, ossStageAge)
+    # print(f"Days: {age}")
+    # print(f"Release: {repo_release_info_age}")
+    # print(f"Stage: {timeTypeAge}, {ossStageAge}")
     
     # classic
     total_added, total_deleted = calculate_churn(filename, file_history)
@@ -228,24 +250,8 @@ def calculate_age(file_history):
     return age
 
 
-def calculate_sloc_cyclomatic_complexity(repo, filename, file_history):
-    try:
-        lines = file_history.split("\n")
-        # print(lines)
-        commit_hashes = [line.split()[1] for line in lines if line.startswith("'commit")]
-        latest_commit_hash = commit_hashes[0]
-        file_content = repo.git.show(f"{latest_commit_hash}:{filename}")
-        
-        
-        
-    except Exception as e:
-        print(filename)
-        print(e)
-        print("")
-
-
-repo_user = "tensorflow"
-repo_name = "tensorflow"
-filename = "tensorflow/core/kernels/sparse_tensors_map_ops.cc"
-iso_date = "2021-12-09T22:32:48Z"
-create_component(repo_user, repo_name, filename, iso_date)
+# repo_user = "tensorflow"
+# repo_name = "tensorflow"
+# filename = "tensorflow/core/kernels/sparse_tensors_map_ops.cc"
+# iso_date = "2021-12-09T22:32:48Z"
+# create_component(repo_user, repo_name, filename, iso_date)
