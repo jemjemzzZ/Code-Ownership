@@ -40,6 +40,8 @@ class Component:
         self.total_added = 0
         self.total_deleted = 0
         self.filesize = 0
+        # Is Defective
+        self.isDefective = False
         
     # add contributor info
     def addContribute(self, contributor, contribution):

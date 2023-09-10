@@ -2,13 +2,9 @@ import os, re, sys, git, subprocess, time
 from datetime import datetime
 from metric_process import *
 
-import os, re, sys, git, subprocess, time
-from datetime import datetime
-from metric_process import *
-
 
 def git_get_repo(repo_user, repo_name):
-    repo_dir = f"repos/{repo_name}_repo"
+    repo_dir = f"../repos/{repo_name}_repo"
     
     if not os.path.exists(repo_dir):
         repo_url = f"https://github.com/{repo_user}/{repo_name}.git"
@@ -34,13 +30,13 @@ def git_get_repo_date(repo, repo_dir):
     return repo_time
 
 
-def calculate_days(repo_time, iso_date):
+def calculate_days(repo_time):
     repo_time_formatted = repo_time.splitlines()
     time_string1 = repo_time_formatted[0] # start date
-    time_string2 = iso_date # commit time
+    time_string2 = repo_time_formatted[-1] # latest date
     # Extract datetime objects from the time strings
     datetime_obj1 = datetime.strptime(time_string1.split()[1] + ' ' + time_string1.split()[2], "%Y-%m-%d %H:%M:%S")
-    datetime_obj2 = datetime.strptime(time_string2, "%Y-%m-%dT%H:%M:%SZ")
+    datetime_obj2 = datetime.strptime(time_string2.split()[1] + ' ' + time_string2.split()[2], "%Y-%m-%d %H:%M:%S")
 
     # Calculate the time difference
     time_difference = datetime_obj2 - datetime_obj1
@@ -70,22 +66,20 @@ def calculate_repo_license_info(repo_license):
     return None
 
 
-def git_get_repo_release(repo, iso_date):
+def git_get_repo_release(repo):
     repo_git = git.Git(repo.working_tree_dir)
-    date_limit_obj = datetime.strptime(iso_date, "%Y-%m-%dT%H:%M:%SZ")
     repo_release_flags = ["-l", "v*"]
     tags = repo_git.tag(*repo_release_flags).splitlines()
     repo_release = {}
     for tag in tags:
         tag_date = repo_git.show("-s", "--format=%ci", tag)
-        tag_date_obj = datetime.strptime(tag_date.split()[0] + " " + tag_date.split()[1], "%Y-%m-%d %H:%M:%S")
-        if tag_date_obj <= date_limit_obj:
-            repo_release[tag] = tag_date
+        repo_release[tag] = tag_date
     return repo_release
 
 
-def git_get_repo_release_within_age(repo, iso_date, age):
+def git_get_repo_release_within_age(repo, age):
     repo_git = git.Git(repo.working_tree_dir)
+    iso_date = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     date_limit_obj = datetime.strptime(iso_date, "%Y-%m-%dT%H:%M:%SZ")
     repo_release_flags = ["-l", "v*"]
     tags = repo_git.tag(*repo_release_flags).splitlines()
@@ -122,72 +116,6 @@ def calculate_repo_release(repo_release):
             major += 1
     # print((major, minor, pre_release, patch, alpha_beta))
     return (major, minor, pre_release, patch, alpha_beta)
-
-
-def git_get_file_history(repo, filename, iso_date):
-    git_date_format = iso_date.replace('T', '').replace('Z', '')
-    file_history = repo.git.log('--follow', "--stat", 
-                            "--pretty=format:'commit %h%nAuthor: %aN <%aE>%nDate: %ad%n'", 
-                            "--date=iso", '-p', '--', filename, before=git_date_format)
-    # print(file_history)
-    return file_history
-
-
-def create_component(repo_user, repo_name, filename, iso_date):
-    component = Component(f"{repo_name}/{filename}", "file")
-    
-    repo, repo_dir = git_get_repo(repo_user, repo_name)
-    repo_time = git_get_repo_date(repo, repo_dir)
-    repo_day_difference = calculate_days(repo_time, iso_date)
-    repo_license = git_get_repo_license(repo, repo_dir)
-    repo_license_info = calculate_repo_license_info(repo_license)
-    repo_release = git_get_repo_release(repo, iso_date)
-    repo_release_info = calculate_repo_release(repo_release)
-    
-    file_history = git_get_file_history(repo, filename, iso_date)
-    
-    # code ownership
-    blocks = re.split(r'commit [0-9a-f]+\n', file_history)[1:]
-    for block in blocks:
-        # extract author and date
-        author_match = re.search(r'Author:\s+(.*)', block)
-        if author_match:
-            author = author_match.group(1)
-        date_match = re.search(r'Date:\s+(.*)', block)
-        if date_match:
-            date = date_match.group(1)
-        # print(f"Author: {author}")
-        # print(f"Date: {date}")
-        component.addContribute(author, 1)
-    
-    # time/release/license
-    timeType, ossStage = calculateTime(repo_day_difference, repo_release_info, repo_time, repo_release)
-    licenseType = checkLicenseType(repo_license_info)
-    age = calculate_age(file_history)
-    component.setTime(repo_day_difference, repo_release_info, timeType, ossStage)
-    component.setLicense(repo_license_info, licenseType)
-    component.calculateOwnership()
-    # print(f"Days: {repo_day_difference}")
-    # print(f"Release: {repo_release_info}")
-    # print(f"Stage: {timeType}, {ossStage}")
-    # print(f"License: {repo_license_info}, {licenseType}")
-    
-    repo_release_age = git_get_repo_release_within_age(repo, iso_date, age)
-    repo_release_info_age = calculate_repo_release(repo_release_age)
-    timeTypeAge, ossStageAge = calculateTime(age, repo_release_info_age, repo_time, repo_release_age)
-    component.setTimeAge(age, repo_release_info_age, timeTypeAge, ossStageAge)
-    # print(f"Days: {age}")
-    # print(f"Release: {repo_release_info_age}")
-    # print(f"Stage: {timeTypeAge}, {ossStageAge}")
-    
-    # classic
-    total_added, total_deleted = calculate_churn(filename, file_history)
-    file_size = get_filesize(repo, filename, file_history)
-    component.setClassic(total_added, total_deleted, file_size)
-    # print(f'Filename: {filename}')
-    # print(f'Total_added: {total_added}, Total_deleted: {total_deleted}')
-    # print(f'File Size: {file_size}')
-    return component
 
 
 def calculate_churn(filename, file_history):
@@ -234,14 +162,12 @@ def calculate_age(file_history):
     age = 0
     
     blocks = re.split(r'commit [0-9a-f]+\n', file_history)[1:]
-    date1_match = re.search(r'Date:\s+(.*)', blocks[0])
     date2_match = re.search(r'Date:\s+(.*)', blocks[-1])
     
-    if date1_match and date2_match:
-        date1 = date1_match.group(1) # latest date
+    if date2_match:
         date2 = date2_match.group(1) # start date
         
-        datetime_obj1 = datetime.strptime(date1.split()[0] + ' ' + date1.split()[1], "%Y-%m-%d %H:%M:%S")
+        datetime_obj1 = datetime.utcnow()
         datetime_obj2 = datetime.strptime(date2.split()[0] + ' ' + date2.split()[1], "%Y-%m-%d %H:%M:%S")
         
         # Calculate the time difference
@@ -250,8 +176,74 @@ def calculate_age(file_history):
     return age
 
 
-# repo_user = "tensorflow"
-# repo_name = "tensorflow"
-# filename = "tensorflow/core/kernels/sparse_tensors_map_ops.cc"
-# iso_date = "2021-12-09T22:32:48Z"
-# create_component(repo_user, repo_name, filename, iso_date)
+def git_get_file_history(repo, filename):
+    file_history = repo.git.log('--follow', "--stat", 
+                            "--pretty=format:'commit %h%nAuthor: %aN <%aE>%nDate: %ad%n'", 
+                            "--date=iso", '-p', '--', filename)
+    # print(file_history)
+    return file_history
+
+
+def create_component(repo_user, repo_name, filename):
+    component = Component(f"{repo_name}/{filename}", "file")
+    
+    repo, repo_dir = git_get_repo(repo_user, repo_name)
+    repo_time = git_get_repo_date(repo, repo_dir)
+    repo_day_difference = calculate_days(repo_time)
+    repo_license = git_get_repo_license(repo, repo_dir)
+    repo_license_info = calculate_repo_license_info(repo_license)
+    repo_release = git_get_repo_release(repo)
+    repo_release_info = calculate_repo_release(repo_release)
+    
+    file_history = git_get_file_history(repo, filename)
+    
+    # code ownership
+    blocks = re.split(r'commit [0-9a-f]+\n', file_history)[1:]
+    for block in blocks:
+        # extract author and date
+        author_match = re.search(r'Author:\s+(.*)', block)
+        if author_match:
+            author = author_match.group(1)
+        date_match = re.search(r'Date:\s+(.*)', block)
+        if date_match:
+            date = date_match.group(1)
+        # print(f"Author: {author}")
+        # print(f"Date: {date}")
+        component.addContribute(author, 1)
+    
+    # time/release/license
+    timeType, ossStage = calculateTime(repo_day_difference, repo_release_info, repo_time, repo_release)
+    licenseType = checkLicenseType(repo_license_info)
+    component.setTime(repo_day_difference, repo_release_info, timeType, ossStage)
+    component.setLicense(repo_license_info, licenseType)
+    component.calculateOwnership()
+    # print(f"Days: {repo_day_difference}")
+    # print(f"Release: {repo_release_info}")
+    # print(f"Stage: {timeType}, {ossStage}")
+    # print(f"License: {repo_license_info}, {licenseType}")
+    
+    age = calculate_age(file_history)
+    repo_release_age = git_get_repo_release_within_age(repo, age)
+    repo_release_info_age = calculate_repo_release(repo_release_age)
+    timeTypeAge, ossStageAge = calculateTime(age, repo_release_info_age, repo_time, repo_release_age)
+    component.setTimeAge(age, repo_release_info_age, timeTypeAge, ossStageAge)
+    # print(f"Days: {age}")
+    # print(f"Release: {repo_release_info_age}")
+    # print(f"Stage: {timeTypeAge}, {ossStageAge}")
+    
+    # classic
+    total_added, total_deleted = calculate_churn(filename, file_history)
+    file_size = get_filesize(repo, filename, file_history)
+    component.setClassic(total_added, total_deleted, file_size)
+    # print(f'Filename: {filename}')
+    # print(f'Total_added: {total_added}, Total_deleted: {total_deleted}')
+    # print(f'File Size: {file_size}')
+    return component
+
+
+def get_filenames(repo_user, repo_name):
+    repo, repo_dir = git_get_repo(repo_user, repo_name)
+    
+    filenames = [item.path for item in repo.head.commit.tree.traverse() if item.type == 'blob']
+    
+    return filenames

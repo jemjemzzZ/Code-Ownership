@@ -1,6 +1,7 @@
 import requests
 import json
 import time
+from github_api import *
 
 API_KEY = "0afc16b9-0b01-4f98-994b-691a650918ea"
 HEADERS = {"apiKey": API_KEY}
@@ -18,12 +19,15 @@ def get_severity(cve_id):
         time.sleep(60)
         response = requests.get(url, headers=HEADERS)
     
-    data = response.json()
-    # severity = data['vulnerabilities'][0]['cve']['metrics']['cvssMetricV31'][0]['cvssData']['baseScore']
-    metric_keys = [key for key in data['vulnerabilities'][0]['cve']['metrics'].keys()]
-    if metric_keys:
-        severity = data['vulnerabilities'][0]['cve']['metrics'][metric_keys[0]][0]['cvssData']['baseScore']
-        return severity
+    try:
+        data = response.json()
+        # severity = data['vulnerabilities'][0]['cve']['metrics']['cvssMetricV31'][0]['cvssData']['baseScore']
+        metric_keys = [key for key in data['vulnerabilities'][0]['cve']['metrics'].keys()]
+        if metric_keys:
+            severity = data['vulnerabilities'][0]['cve']['metrics'][metric_keys[0]][0]['cvssData']['baseScore']
+            return severity
+    except Exception as e:
+        raise RateLimitException()
     
     return None
 

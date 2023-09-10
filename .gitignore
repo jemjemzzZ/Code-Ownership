@@ -1,5 +1,6 @@
 /test
 /results
 /data_collection/repos
+/misc
 .vscode
 __pycache__

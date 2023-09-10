@@ -24,7 +24,8 @@ def write_component_to_results(filename, component_tuple):
                       "Days Difference", "Release Info", "Time Stage", "Oss Stage", 
                       "Age", "Release Info Aged", "Time Stage Aged", "Oss Stage Aged", 
                       "License Info", "License Type", 
-                      "Total Added", "Total Deleted", "File Size"]
+                      "Total Added", "Total Deleted", "File Size", 
+                      "Is Defective"]
             csv_writer.writerow(header)
         
         cve_severity = component_tuple[5]
@@ -43,7 +44,8 @@ def write_component_to_results(filename, component_tuple):
                 component.time, json.dumps(component.release), component.timeType, component.ossStage, 
                 component.age, json.dumps(component.releaseAge), component.timeTypeAge, component.ossStageAge, 
                 component.licenseInfo, component.licenseType, 
-                component.total_added, component.total_deleted, component.filesize]
+                component.total_added, component.total_deleted, component.filesize, 
+                component.isDefective]
         csv_writer.writerow(row)
         
     return
@@ -72,4 +74,6 @@ def process_dataset_to_results(dataset, result_file):
             print("")
 
 
-process_dataset_to_results("data/dataset.csv", "data/results.csv")
+# process_dataset_to_results("data/dataset.csv", "data/results.csv")
+# process_dataset_to_results("data/cve_dataset.csv", "data/cve_results.csv")
+process_dataset_to_results("data/pytorch_tensorflow_dataset.csv", "data/pytorch_tensorflow_results.csv")
