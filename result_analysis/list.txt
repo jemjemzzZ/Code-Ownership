@@ -2,7 +2,7 @@
 1.1 proportion的随机性不影响heatmap的结果
 1.2 threshold的定义不影响minor和age/is_defective的correlation
 1.3 group component不影响heatmap的结果，同file component的定义
-1.4 方法： descriptive describe看分布, bootstrap resampling/permutation test, Correlation/Covariance Structure Comparison
+1.4 方法： descriptive describe看分布, bootstrap resampling/permutation test, Correlation/Covariance Structure Comparison(Frobenius norm)
 
 2. correlation
 is_defective, time/age, cve_severity

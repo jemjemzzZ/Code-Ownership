@@ -73,7 +73,7 @@ def multi_linear_regression(predictors, dependent, df):
 
 
 # format df
-def format_df(df):
+def format_df(df, is_non_numeric):
     # file size
     df['File Size'] =  df['File Size'].fillna(0)
     
@@ -92,6 +92,9 @@ def format_df(df):
     df['Code churn'] = df['Total Added'] + df['Total Deleted']
     df['Churn rate'] = np.where(df['File Size'] != 0, (df['Code churn'] / df['File Size']) * 100, 0)
     
+    # exclude non-numeric
+    if is_non_numeric:
+        df = df.select_dtypes(include=['number', 'bool'])
     
     return df
 
@@ -115,51 +118,14 @@ def group_component_df(df):
         rows.append(row)
     
     df_new = pd.DataFrame(rows)
-    # df = df.append(df_new, ignore_index=True)
     
+    # df = df.append(df_new, ignore_index=True)
     # # component type
     # component_mapping = {'file': 1, 'group': 2}
     # df['Component Type Numeric'] = df['Component Type'].map(component_mapping)
     
     return df_new
 
-
-# Read the CSV files into DataFrames
-cve_df = pd.read_csv('cve_results.csv')
-pytorch_tensorflow_df = pd.read_csv('pytorch_tensorflow_results.csv')
-non_vulnerable_df = pd.read_csv('non_vulnerable_results.csv')
-
-# format df
-cve_df = format_df(cve_df)
-pytorch_tensorflow_df = format_df(pytorch_tensorflow_df)
-non_vulnerable_df = format_df(non_vulnerable_df)
-
-
-# Is Defective
-# combined_df = combine_df(pytorch_tensorflow_df, non_vulnerable_df)
-# descriptive_statistics(combined_df)
-# corr_matrix_heatmap(combined_df, 'pearson') # pearson
-# corr_matrix_heatmap(combined_df, 'spearman') # spearman
-# multi_linear_regression(['Per of Minor 10%'], 'Is Defective', combined_df)
-
-
-# Vulnerable With Time/Age
-# corr_matrix_heatmap(pytorch_tensorflow_df, 'pearson') # pearson
-# corr_matrix_heatmap(pytorch_tensorflow_df, 'spearman') # spearman
-print(pytorch_tensorflow_df.isnull().sum())
-multi_linear_regression(['Churn rate'], 'Time Stage Aged Numeric', pytorch_tensorflow_df)
-
-
-# Vulnerable With CVE Severity
-# corr_matrix_heatmap(cve_df, 'pearson') # pearson
-# corr_matrix_heatmap(cve_df, 'spearman') # spearman
-
-
-# Group component performance
-# group_vulnerable_df = group_component_df(pytorch_tensorflow_df)
-# group_cve_df = group_component_df(cve_df)
-# corr_matrix_heatmap(group_vulnerable_df, 'pearson') # pearson
-# corr_matrix_heatmap(group_cve_df, 'spearman') # spearman
 
 
 
