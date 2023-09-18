@@ -9,6 +9,7 @@ is_defective, time/age, cve_severity
 2.1 line/dot graph看走势
 2.2 pearson (linear), kendall, spearman (mono)
 2.3 multiple linear regression看metric是否robust
+2.4 partial correlation?
 
 3. further research
 3.1 prediction
@@ -17,3 +18,4 @@ is_defective, time/age, cve_severity
 4. ?
 4.1 Oss Stage的重新定义
 4.2 Cve的抓取
+4.3 Defect density?

@@ -165,25 +165,26 @@ def locality_validate(df):
     return
 
 
-# read csv
-cve_df = pd.read_csv(SETTINGS['cve results'])
-vulnerable_df = pd.read_csv(SETTINGS['vulnerable results'])
-non_vulnerable_df = pd.read_csv(SETTINGS['non vulnerable results'])
+if __name__ == "__main__":
+    # read csv
+    cve_df = pd.read_csv(SETTINGS['cve results'])
+    vulnerable_df = pd.read_csv(SETTINGS['vulnerable results'])
+    non_vulnerable_df = pd.read_csv(SETTINGS['non vulnerable results'])
 
-# format df
-cve_df_formatted = format_df(cve_df, True)
-vulnerable_df_formatted = format_df(vulnerable_df, True)
-non_vulnerable_df_formatted = format_df(non_vulnerable_df, True)
+    # format df
+    cve_df_formatted = format_df(cve_df, True)
+    vulnerable_df_formatted = format_df(vulnerable_df, True)
+    non_vulnerable_df_formatted = format_df(non_vulnerable_df, True)
 
-# combine df
-combined_df = combine_df(vulnerable_df_formatted, non_vulnerable_df_formatted)
+    # combine df
+    combined_df = combine_df(vulnerable_df_formatted, non_vulnerable_df_formatted)
 
 
-# p1.1
-proportion_validate(vulnerable_df_formatted, non_vulnerable_df_formatted)
+    # p1.1
+    proportion_validate(vulnerable_df_formatted, non_vulnerable_df_formatted)
 
-# p1.2
-threshold_validate(combined_df, vulnerable_df_formatted, cve_df_formatted)
+    # p1.2
+    threshold_validate(combined_df, vulnerable_df_formatted, cve_df_formatted)
 
-# p1.3
-locality_validate(vulnerable_df)
+    # p1.3
+    locality_validate(vulnerable_df)

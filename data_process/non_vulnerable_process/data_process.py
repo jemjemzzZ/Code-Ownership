@@ -1,10 +1,17 @@
-from metric_process import *
-from git_process import *
-
-import csv, os, json, ast
+import csv, os, re, json, ast
 import pandas as pd
 
+import git_tool
 
+# import from utils
+import sys
+sys.path.append('../')
+from utils import metric_api
+
+
+"""
+Extract the repo by URL
+"""
 def extract_repo(url):
     # Extract repository name and pull request number from the URL
     pattern = r"https://github.com/([^/]+)/([^/]+)"
@@ -17,14 +24,20 @@ def extract_repo(url):
         return None, None
 
 
+"""
+Write the component to the destination file
+"""
 def write_component_to_results(filename, url, repo_name, component):
+    # check file location
     file_exist_flag = True
     if not os.path.exists(filename):
         file_exist_flag = False
     
+    # open file
     with open(filename, 'a', newline='') as csvfile:
         csv_writer = csv.writer(csvfile)
         
+        # file creation
         if not file_exist_flag:
             # header
             header = ["URL", "Repo Name", 
@@ -40,6 +53,7 @@ def write_component_to_results(filename, url, repo_name, component):
                       "Is Defective"]
             csv_writer.writerow(header)
         
+        # write row
         row = [url, repo_name, 
                 component.name, component.componentType, component.ownership, component.contributorNum, 
                 component.minorNum5, component.minorPer5, component.minorContriAvg5, 
@@ -56,20 +70,34 @@ def write_component_to_results(filename, url, repo_name, component):
     return
 
 
-def write_url_to_file(url, result_file):
+"""
+Create components from URL,
+put component info to destination result file
+"""
+def data_process_api(url, result_file):
+    # repo
     repo_user, repo_name = extract_repo(url)
-    
-    filenames = get_filenames(repo_user, repo_name)
+    # files in repo
+    filenames = git_tool.get_filenames(repo_user, repo_name)
     
     for filename in filenames:
         try:
-            component = create_component(repo_user, repo_name, filename)
+            # create component
+            component = git_tool.create_component(repo_user, repo_name, filename)
+            # set component as non-vulernable
+            component.setIsDefective(False)
+            # write to result file
             write_component_to_results(result_file, url, repo_name, component)
         except Exception as e:
+            print(f"{repo_name}/{filename}")
             print(e)
+            print("")
     
     return 
 
 
-write_url_to_file("https://github.com/tensorflow/tensorflow", "data/non_vulnerable_results.csv")
-write_url_to_file("https://github.com/pytorch/pytorch", "data/non_vulnerable_results.csv")
+# Test
+if __name__ == "__main__":
+    data_process_api("https://github.com/phwl/pyverilator", "data/non_vulnerable_results.csv")
+    # data_process_api("https://github.com/tensorflow/tensorflow", "data/non_vulnerable_results.csv")
+    # data_process_api("https://github.com/pytorch/pytorch", "data/non_vulnerable_results.csv")

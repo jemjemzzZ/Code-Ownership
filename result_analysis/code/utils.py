@@ -6,6 +6,8 @@ from scipy.stats import pearsonr
 from scipy.stats import spearmanr
 import statsmodels.api as sm
 
+from settings import *
+
 
 # descriptive statistics
 def descriptive_statistics(df):
@@ -38,14 +40,25 @@ def descriptive_statistics(df):
 
 
 # correlation heatmap
-def corr_matrix_heatmap(df, method_name):
+def corr_matrix_heatmap(df, method_name, title):
     corr_matrix = df.corr(method=method_name)
 
     plt.figure(figsize=(15,15))
     sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f')
-    plt.title("Correlation Matrix")
+    plt.title(f"Correlation Matrix: {title}")
     plt.subplots_adjust(bottom=0.3)
     plt.show()
+
+
+# xy-axis plotting
+def xy_plot(df, column_x, column_y):
+    plt.scatter(df[column_x], df[column_y])
+    plt.xlabel(column_x)
+    plt.ylabel(column_y)
+    plt.title(f'Scatter plot of {column_x} vs {column_y}')
+    plt.grid(True)
+    plt.show()
+    return
 
 
 # pearson correlation between attrs to attr
@@ -119,12 +132,41 @@ def group_component_df(df):
     
     df_new = pd.DataFrame(rows)
     
-    # df = df.append(df_new, ignore_index=True)
-    # # component type
-    # component_mapping = {'file': 1, 'group': 2}
-    # df['Component Type Numeric'] = df['Component Type'].map(component_mapping)
-    
     return df_new
+
+
+# find component occurs as multiple time
+def duplicate_component_df(df):
+    rows = []
+    for name, group_data in df.groupby('Name'):
+        row = {'Name': name, 'Is Defective': True}
+        row['Duplicate Count'] = group_data.shape[0]
+        for col in group_data.select_dtypes(include=[np.number]).columns:
+            row[col] = group_data[col].mean()
+        row['Density'] = row['Duplicate Count'] / row['File Size']
+        rows.append(row)
+    
+    df_new = pd.DataFrame(rows)
+    print(df_new)
+    return df_new
+
+
+# test
+if __name__ == "__main__":
+    # read csv
+    cve_df = pd.read_csv(SETTINGS['cve results'])
+    vulnerable_df = pd.read_csv(SETTINGS['vulnerable results'])
+
+    # format df
+    cve_df = format_df(cve_df, False)
+    vulnerable_df = format_df(vulnerable_df, False)
+    
+    # component with duplicate item
+    duplicated_df = duplicate_component_df(vulnerable_df).select_dtypes(include=['number', 'bool'])
+    
+    # corr duplicated df
+    corr_matrix_heatmap(duplicated_df, 'spearman', 'Duplicated Pearson')
+
 
 
 

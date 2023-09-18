@@ -1,6 +1,7 @@
 import pandas as pd
 
 
+# filter only with CVE ID/Severity
 def filter_out_cve(raw_dataset, new_dataset):
     df = pd.read_csv(raw_dataset)
 
@@ -10,6 +11,7 @@ def filter_out_cve(raw_dataset, new_dataset):
     filtered_df.to_csv(new_dataset, index=False)
 
 
+# filter only under Pytorch/Tensorflow
 def filter_out_pytorch_tensorflow(raw_dataset, new_dataset):
     df = pd.read_csv(raw_dataset)
     
@@ -17,7 +19,8 @@ def filter_out_pytorch_tensorflow(raw_dataset, new_dataset):
     filtered_df = df[df['Repo Name'].isin(allowed_repo_names)]
     
     filtered_df.to_csv(new_dataset, index=False)
-    
-    
-filter_out_cve("dataset.csv", "cve_dataset.csv")
-filter_out_pytorch_tensorflow("dataset.csv", "pytorch_tensorflow_dataset.csv")
+
+
+if __name__ == "__main__":
+    filter_out_cve("dataset.csv", "cve_dataset.csv")
+    filter_out_pytorch_tensorflow("dataset.csv", "pytorch_tensorflow_dataset.csv")
