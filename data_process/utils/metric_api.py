@@ -164,7 +164,7 @@ def calculateTime(time, release, log_time, log_release):
     
     # release combined (success/tragedy)
     ossStage = None
-    release_num = release[0] + release[1] # only care about major/minor release number (?)
+    release_num = release[0] + release[1] + release[2] # only care about major/minor/pre release number (?)
     if release_num >= 1:
         ossStage = "SI"
     if release_num == 0 and time >= 365:

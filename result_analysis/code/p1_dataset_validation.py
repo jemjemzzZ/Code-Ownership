@@ -165,6 +165,9 @@ def locality_validate(df):
     return
 
 
+# p1.4 Distribution Statistics Analysis
+
+
 if __name__ == "__main__":
     # read csv
     cve_df = pd.read_csv(SETTINGS['cve results'])
@@ -188,3 +191,5 @@ if __name__ == "__main__":
 
     # p1.3
     locality_validate(vulnerable_df)
+    
+    # p1.4

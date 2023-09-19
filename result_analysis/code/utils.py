@@ -75,7 +75,7 @@ def attr_and_one_attribute(df, dependent, predictors):
 
 
 # multiple linear regression
-def multi_linear_regression(predictors, dependent, df):
+def multi_linear_regression(predictors, dependent, df):    
     X = df[predictors]
     X = sm.add_constant(X)
     y = df[dependent]
@@ -143,11 +143,11 @@ def duplicate_component_df(df):
         row['Duplicate Count'] = group_data.shape[0]
         for col in group_data.select_dtypes(include=[np.number]).columns:
             row[col] = group_data[col].mean()
-        row['Density'] = row['Duplicate Count'] / row['File Size']
+        row['Density'] = (row['Duplicate Count'] / row['File Size'])
         rows.append(row)
     
-    df_new = pd.DataFrame(rows)
-    print(df_new)
+    df_new = pd.DataFrame(rows).dropna()
+
     return df_new
 
 
@@ -156,16 +156,25 @@ if __name__ == "__main__":
     # read csv
     cve_df = pd.read_csv(SETTINGS['cve results'])
     vulnerable_df = pd.read_csv(SETTINGS['vulnerable results'])
+    non_vulnerable_df = pd.read_csv(SETTINGS['non vulnerable results'])
 
     # format df
     cve_df = format_df(cve_df, False)
     vulnerable_df = format_df(vulnerable_df, False)
+    non_vulnerable_df = format_df(non_vulnerable_df, False)
+    
+    # combine df
+    combined_df = combine_df(vulnerable_df, non_vulnerable_df)
     
     # component with duplicate item
-    duplicated_df = duplicate_component_df(vulnerable_df).select_dtypes(include=['number', 'bool'])
+    duplicated_df = duplicate_component_df(vulnerable_df).select_dtypes(include=['number', 'bool']).sample(frac=0.5)
     
     # corr duplicated df
     corr_matrix_heatmap(duplicated_df, 'spearman', 'Duplicated Pearson')
+    
+    # duplicate density multiple linear regression
+    multi_linear_regression(['Per of Minor 10%'], 'Density', duplicated_df)
+    multi_linear_regression(['Per of Minor 10%', 'File Size'], 'Density', duplicated_df)
 
 
 
