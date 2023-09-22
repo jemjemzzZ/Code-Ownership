@@ -1,9 +1,5 @@
-Framework,CVE ID,Reference URLs
-pytorch,CVE-2021-43811,"['https://github.com/awslabs/sockeye/pull/964', 'https://github.com/awslabs/sockeye/releases/tag/2.3.24', 'https://github.com/awslabs/sockeye/security/advisories/GHSA-ggmr-44cv-24pm']"
-pytorch,CVE-2021-4118,"['https://github.com/pytorchlightning/pytorch-lightning/commit/62f1e82e032eb16565e676d39e0db0cac7e34ace', 'https://huntr.dev/bounties/31832f0c-e5bb-4552-a12c-542f81f111e6']"
-pytorch,CVE-2022-0845,"['https://github.com/pytorchlightning/pytorch-lightning/commit/8b7a12c52e52a06408e9231647839ddb4665e8ae', 'https://huntr.dev/bounties/a795bf93-c91e-4c79-aae8-f7d8bda92e2a']"
-pytorch,CVE-2022-45907,"['https://github.com/pytorch/pytorch/commit/767f6aa49fe20a2766b9843d01e3b7f7793df6a3', 'https://github.com/pytorch/pytorch/issues/88868']"
-pytorch,CVE-2021-43811,"['https://github.com/awslabs/sockeye/pull/964', 'https://github.com/awslabs/sockeye/releases/tag/2.3.24', 'https://github.com/awslabs/sockeye/security/advisories/GHSA-ggmr-44cv-24pm']"
-pytorch,CVE-2021-4118,"['https://github.com/pytorchlightning/pytorch-lightning/commit/62f1e82e032eb16565e676d39e0db0cac7e34ace', 'https://huntr.dev/bounties/31832f0c-e5bb-4552-a12c-542f81f111e6']"
-pytorch,CVE-2022-0845,"['https://github.com/pytorchlightning/pytorch-lightning/commit/8b7a12c52e52a06408e9231647839ddb4665e8ae', 'https://huntr.dev/bounties/a795bf93-c91e-4c79-aae8-f7d8bda92e2a']"
-pytorch,CVE-2022-45907,"['https://github.com/pytorch/pytorch/commit/767f6aa49fe20a2766b9843d01e3b7f7793df6a3', 'https://github.com/pytorch/pytorch/issues/88868']"
+Framework,CVE ID,Reference URLs,Patch URLs
+pytorch,CVE-2021-43811,"['https://github.com/awslabs/sockeye/pull/964', 'https://github.com/awslabs/sockeye/releases/tag/2.3.24', 'https://github.com/awslabs/sockeye/security/advisories/GHSA-ggmr-44cv-24pm']",['https://github.com/awslabs/sockeye/pull/964']
+pytorch,CVE-2021-4118,"['https://github.com/pytorchlightning/pytorch-lightning/commit/62f1e82e032eb16565e676d39e0db0cac7e34ace', 'https://huntr.dev/bounties/31832f0c-e5bb-4552-a12c-542f81f111e6']",['https://github.com/pytorchlightning/pytorch-lightning/commit/62f1e82e032eb16565e676d39e0db0cac7e34ace']
+pytorch,CVE-2022-0845,"['https://github.com/pytorchlightning/pytorch-lightning/commit/8b7a12c52e52a06408e9231647839ddb4665e8ae', 'https://huntr.dev/bounties/a795bf93-c91e-4c79-aae8-f7d8bda92e2a']",['https://github.com/pytorchlightning/pytorch-lightning/commit/8b7a12c52e52a06408e9231647839ddb4665e8ae']
+pytorch,CVE-2022-45907,"['https://github.com/pytorch/pytorch/commit/767f6aa49fe20a2766b9843d01e3b7f7793df6a3', 'https://github.com/pytorch/pytorch/issues/88868']",['https://github.com/pytorch/pytorch/commit/767f6aa49fe20a2766b9843d01e3b7f7793df6a3']

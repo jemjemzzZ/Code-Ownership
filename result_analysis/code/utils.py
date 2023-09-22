@@ -40,15 +40,20 @@ def descriptive_statistics(df):
 
 
 # correlation heatmap
-def corr_matrix_heatmap(df, method_name, title):
+def corr_matrix_heatmap(df, method_name, title, save_folder):
     corr_matrix = df.corr(method=method_name)
 
-    plt.figure(figsize=(15,15))
-    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f')
+    fig, ax = plt.subplots(figsize=(15,15))
+    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f', ax=ax)
     plt.title(f"Correlation Matrix: {title}")
     plt.subplots_adjust(bottom=0.3)
-    plt.show()
-
+    
+    # save
+    if save_folder:
+        save_path = f"{save_folder}heatmap_{title}.png"
+        fig.savefig(save_path)
+    else:
+        plt.show()
 
 # xy-axis plotting
 def xy_plot(df, column_x, column_y):
@@ -170,7 +175,7 @@ if __name__ == "__main__":
     duplicated_df = duplicate_component_df(vulnerable_df).select_dtypes(include=['number', 'bool']).sample(frac=0.5)
     
     # corr duplicated df
-    corr_matrix_heatmap(duplicated_df, 'spearman', 'Duplicated Pearson')
+    corr_matrix_heatmap(duplicated_df, 'spearman', 'Duplicated Pearson', None)
     
     # duplicate density multiple linear regression
     multi_linear_regression(['Per of Minor 10%'], 'Density', duplicated_df)

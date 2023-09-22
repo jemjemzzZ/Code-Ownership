@@ -33,10 +33,10 @@ def parse_raw_data(framework, raw_dir, distilled_dir):
 if __name__ == "__main__":
     print("[INF] Begin.")
     # Load configuration
-    DISTILLED_DIR   = settings.APP_CONFIG['distilled_dir']
-    RAW_DIR         = settings.APP_CONFIG['raw_dir']
-    FRAMEWORKS      = settings.APP_CONFIG['frameworks']
-    NVD_SEARCH_API  = settings.APP_CONFIG['nvd_search_api']
+    DISTILLED_DIR   = settings.NVD_APP_CONFIG['distilled_dir']
+    RAW_DIR         = settings.NVD_APP_CONFIG['raw_dir']
+    FRAMEWORKS      = settings.NVD_APP_CONFIG['frameworks']
+    NVD_SEARCH_API  = settings.NVD_APP_CONFIG['nvd_search_api']
     PROXY           = None
 
     for framework in FRAMEWORKS:
