@@ -285,6 +285,10 @@ def create_component(repo_user, repo_name, filename):
     timeTypeAge, ossStageAge = metric_api.calculateTime(age, repo_release_info_age, repo_time, repo_release_age)
     component.setTimeAge(age, repo_release_info_age, timeTypeAge, ossStageAge)
     
+    # check pre-/post- release
+    prepost = metric_api.checkPrePostRelease(repo_release)
+    component.setPrePost(prepost)
+    
     # classic code metric
     total_added, total_deleted = calculate_churn(filename, file_history)
     file_size = get_filesize(repo, filename, file_history)

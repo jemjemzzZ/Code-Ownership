@@ -52,6 +52,9 @@ class Component:
         self.filesize = 0 # the file size
         # Is Defective
         self.isDefective = None
+        # pre-/post-
+        self.isPre = False
+        self.isPost = False
         
     # add contributor info
     def addContribute(self, contributor, contribution):
@@ -122,6 +125,11 @@ class Component:
     # set is_defective
     def setIsDefective(self, is_defective):
         self.isDefective = is_defective
+        
+    # set pre/post
+    def setPrePost(self, prepost):
+        self.isPre = prepost[0]
+        self.isPost = prepost[1]
     
     # output the message
     def outputMessage(self):
@@ -223,3 +231,28 @@ def checkLicenseType(licenseInfo):
         licenseType = "permissive"
     
     return licenseType
+
+
+"""
+Check the component is at pre- or post- release stage
+return (bool, bool) 1st for pre-, 2nd for post-
+"""
+def checkPrePostRelease(log_release):
+    if len(log_release) <= 0:
+        return (False, False)
+    
+    # latest commit release
+    (tag, date) = list(log_release.items())[-1]
+    release = tag.split(".")
+    
+    if len(release) < 3:
+        return (False, False)
+    
+    if "rc" in release[2]:
+        return (True, False) # pre-
+    elif "a" in release[2] or "b" in release[2]:
+        return (False, False)
+    else:
+        return (False, True) # post-
+    
+    return (False, False)

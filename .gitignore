@@ -1,6 +1,8 @@
 /test
 /results
-/data_collection/repos
+/data_process/repos
 /misc
+/repos
 .vscode
+*.png
 __pycache__

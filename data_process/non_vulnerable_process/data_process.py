@@ -50,7 +50,7 @@ def write_component_to_results(filename, url, repo_name, component):
                       "Age", "Release Info Aged", "Time Stage Aged", "Oss Stage Aged", 
                       "License Info", "License Type", 
                       "Total Added", "Total Deleted", "File Size", 
-                      "Is Defective"]
+                      "Is Defective", "Is Pre-release", "Is Post-release"]
             csv_writer.writerow(header)
         
         # write row
@@ -64,7 +64,7 @@ def write_component_to_results(filename, url, repo_name, component):
                 component.age, json.dumps(component.releaseAge), component.timeTypeAge, component.ossStageAge, 
                 component.licenseInfo, component.licenseType, 
                 component.total_added, component.total_deleted, component.filesize, 
-                component.isDefective]
+                component.isDefective, component.isPre, component.isPost]
         csv_writer.writerow(row)
         
     return

@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 from scipy.stats import spearmanr
 import statsmodels.api as sm
+import ast
 
 from settings import *
 
@@ -110,6 +111,14 @@ def format_df(df, is_non_numeric):
     df['Code churn'] = df['Total Added'] + df['Total Deleted']
     df['Churn rate'] = np.where(df['File Size'] != 0, (df['Code churn'] / df['File Size']) * 100, 0)
     
+    # release amounts
+    df['Release Amounts'] = df['Release Info'].apply(lambda x: sum(ast.literal_eval(x)))
+    df['Release Amounts Aged'] = df['Release Info Aged'].apply(lambda x: sum(ast.literal_eval(x)))
+    
+    # major
+    df['Num of Major'] = df['Num of Contributor'] - df['Num of Minor 10%']
+    df['Per of Major'] = df['Num of Major'] / df['Num of Contributor']
+    
     # exclude non-numeric
     if is_non_numeric:
         df = df.select_dtypes(include=['number', 'bool'])
@@ -164,22 +173,17 @@ if __name__ == "__main__":
     non_vulnerable_df = pd.read_csv(SETTINGS['non vulnerable results'])
 
     # format df
-    cve_df = format_df(cve_df, False)
-    vulnerable_df = format_df(vulnerable_df, False)
-    non_vulnerable_df = format_df(non_vulnerable_df, False)
+    cve_df_formatted = format_df(cve_df, True)
+    vulnerable_df_formatted = format_df(vulnerable_df, True)
+    non_vulnerable_df_formatted = format_df(non_vulnerable_df, True)
     
     # combine df
-    combined_df = combine_df(vulnerable_df, non_vulnerable_df)
+    combined_df = combine_df(vulnerable_df_formatted, non_vulnerable_df_formatted)
     
-    # component with duplicate item
-    duplicated_df = duplicate_component_df(vulnerable_df).select_dtypes(include=['number', 'bool']).sample(frac=0.5)
-    
-    # corr duplicated df
-    corr_matrix_heatmap(duplicated_df, 'spearman', 'Duplicated Pearson', None)
-    
-    # duplicate density multiple linear regression
-    multi_linear_regression(['Per of Minor 10%'], 'Density', duplicated_df)
-    multi_linear_regression(['Per of Minor 10%', 'File Size'], 'Density', duplicated_df)
+    # heatmap
+    corr_matrix_heatmap(combined_df, 'spearman', 'Test: combined_df', None)
+    corr_matrix_heatmap(vulnerable_df_formatted, 'spearman', 'Test: vulnerable_df', None)
+    corr_matrix_heatmap(cve_df_formatted, 'spearman', 'Test: cve_df', None)
 
 
 
