@@ -122,13 +122,13 @@ if __name__ == "__main__":
                'File Size', 'Code churn', 'Churn rate']
     
     # p1.1
-    # descriptive_statistics(vulnerable_df_formatted, columns)
+    descriptive_statistics(vulnerable_df_formatted, columns)
     
     # p1.2
-    # diagrams(vulnerable_df_formatted, columns)
+    diagrams(vulnerable_df_formatted, columns)
     
     # p1.3
-    # skewness_kurtosis(vulnerable_df_formatted, columns)
+    skewness_kurtosis(vulnerable_df_formatted, columns)
     
     # p1.4
-    # sw_ks_tests(vulnerable_df_formatted, columns)
+    sw_ks_tests(vulnerable_df_formatted, columns)

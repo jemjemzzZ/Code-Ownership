@@ -1,6 +1,9 @@
 /test
 /results
 /data_process/repos
+/data_collection/data/distilled
+/data_collection/data/manual
+/data_collection/data/raw
 /misc
 /repos
 .vscode

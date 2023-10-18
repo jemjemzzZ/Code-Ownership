@@ -191,10 +191,10 @@ if __name__ == "__main__":
 
 
     # p2.1
-    # proportion_validate(vulnerable_df_formatted, non_vulnerable_df_formatted)
+    proportion_validate(vulnerable_df_formatted, non_vulnerable_df_formatted)
 
     # p2.2
-    # threshold_validate(combined_df, vulnerable_df_formatted, cve_df_formatted)
+    threshold_validate(combined_df, vulnerable_df_formatted, cve_df_formatted)
 
     # p2.3
-    # locality_validate(vulnerable_df)
+    locality_validate(vulnerable_df)
