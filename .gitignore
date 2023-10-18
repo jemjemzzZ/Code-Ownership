@@ -1,10 +1,12 @@
 /test
 /results
 /data_process/repos
-/data_process/vulnerable_process/data/
+/data_process/vulnerable_process/data/dataset_with_release_amount
+/data_process/vulnerable_process/data/dataset_without_release_amount
 /data_collection/data/distilled
 /data_collection/data/manual
 /data_collection/data/raw
+/result_analysis/img
 /misc
 /repos
 .vscode
