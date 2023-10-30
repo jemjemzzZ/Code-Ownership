@@ -21,14 +21,14 @@ APP_CONFIG = {
 Command Line interface
 """
 def main():
-    parser = argparse.ArgumentParser(description='Vulnerable_process Interface')
+    parser = argparse.ArgumentParser(description='Source Code Examination Interface')
 
     # Add arguments
-    parser.add_argument('-c', '--collect', action='store_true', help='Collect data from the vulnerability file')
-    parser.add_argument('-p', '--process', action='store_true', help='Process the dataset')
-    parser.add_argument('--cve', action='store_true', help='Process CVE dataset only')
-    parser.add_argument('--torchflow', action='store_true', help='Process Pytorch/Tensorflow dataset only')
-    parser.add_argument('--files', nargs=2, help='Input two custom files', metavar=('Src', 'Dst'))
+    parser.add_argument('--cve', action='store_true', help='Use default CVE dataset')
+    parser.add_argument('--torchflow', action='store_true', help='Use default Pytorch/Tensorflow dataset')
+    parser.add_argument('--files', nargs=2, help='Specify input and output csv file destination', metavar=('Src', 'Dst'))
+    parser.add_argument('-c', '--collect', action='store_true', help='Collect data from the source code info dataset')
+    parser.add_argument('-p', '--process', action='store_true', help='Process the dataset (use default dataset without other flags specified)')
     
     # Parse the arguments
     args = parser.parse_args()

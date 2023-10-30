@@ -17,12 +17,12 @@ APP_CONFIG = {
 Command Line interface
 """
 def main():
-    parser = argparse.ArgumentParser(description='Non_Vulnerable_process Interface')
+    parser = argparse.ArgumentParser(description='GitHub Repository Examination Interface')
 
     # Add arguments
-    parser.add_argument('-p', '--process', action='store_true', help='Process the default URLs')
     parser.add_argument('--url', nargs=1, help='Specify the REPO URL', metavar=('URL'))
     parser.add_argument('--dst', nargs=1, help='Specify the result destination', metavar=('Dst'))
+    parser.add_argument('-p', '--process', action='store_true', help='Process the default URLs')
     
     # Parse the arguments
     args = parser.parse_args()

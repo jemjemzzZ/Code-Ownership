@@ -116,7 +116,7 @@ if __name__ == "__main__":
     combined_df = combine_df(vulnerable_df_formatted, non_vulnerable_df_formatted)
     
     # columns
-    columns = ['CVE Severity', 'Ownership', 
+    columns = ['CVE Severity', 'Ownership', 'Num of Contributor',
                'Num of Minor 10%', 'Per of Minor 10%', 'Avg of Minor Contri 10%', 
                'Days Difference', 'Age', 'Time Stage Aged Numeric', 'Oss Stage Aged Numeric', 
                'File Size', 'Code churn', 'Churn rate']
