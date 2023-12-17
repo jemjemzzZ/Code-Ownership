@@ -1,7 +1,7 @@
 # Code Ownership in Open-Source AI Software Security
 ## 1 Overview
 
-This repository offers tools for evaluating code ownership and computing time and release metrics. These tools and methodologies are directly inspired by the experimental findings and outcomes detailed in the paper. For an in-depth understanding of the theoretical background and practical applications, refer to the paper [Code Ownership in Open-Source AI Software Security](Code_Ownership_in_Open_Source_AI_Software_Security__RAIE_2024_.pdf).
+This repository offers tools for evaluating code ownership and computing time and release metrics. These tools and methodologies are directly inspired by the experimental findings and outcomes detailed in the paper. For an in-depth understanding of the theoretical background and practical applications, refer to the paper [Code Ownership in Open-Source AI Software Security](Code_Ownership_in_Open_Source_AI_Software_Security.pdf).
 
 ## 2 Prerequisite
 
