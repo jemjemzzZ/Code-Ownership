@@ -5,7 +5,7 @@ import requests
 """
 TOKEN used for Github
 """
-TOKEN = "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"
+TOKEN = "" # replace with ur Github Token
 HEADERS = {
     'Authorization': f'token {TOKEN}',
     'User-Agent': 'Code Ownership'

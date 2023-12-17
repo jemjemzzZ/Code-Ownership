@@ -33,7 +33,7 @@ def main():
         
         # use custom URL
         if args.url:
-            url = args.url
+            url = args.url[0]
             data_process.data_process_api(url, result_file)
             return
         else:

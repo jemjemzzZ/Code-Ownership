@@ -5,7 +5,7 @@ from .github_api import *
 """
 NVD API key
 """
-API_KEY = "0afc16b9-0b01-4f98-994b-691a650918ea"
+API_KEY = "" # replace with ur NVD Token
 HEADERS = {"apiKey": API_KEY}
 
 
